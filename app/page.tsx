@@ -1,4 +1,63 @@
+"use client";
+import { useState } from "react";
 import Link from "next/link";
+
+function WaitlistForm({ variant = "large" }: { variant?: "large" | "small" }) {
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+
+    try {
+      const res = await fetch("/api/waitlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      if (res.ok) {
+        setStatus("success");
+        setEmail("");
+      } else {
+        setStatus("error");
+      }
+    } catch {
+      setStatus("error");
+    }
+  };
+
+  if (status === "success") {
+    return (
+      <div className="flex items-center gap-2 text-green-400 font-medium">
+        <span>✓</span>
+        <span>You&apos;re on the list! We&apos;ll be in touch.</span>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className={`flex ${variant === "large" ? "flex-col sm:flex-row" : "flex-row"} gap-3 w-full max-w-md ${variant === "large" ? "mx-auto" : ""}`}>
+      <input
+        type="email"
+        placeholder="Enter your email"
+        value={email}
+        onChange={(e) => { setEmail(e.target.value); setStatus("idle"); }}
+        required
+        className="flex-1 px-4 py-3 rounded-xl bg-[#111827] border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 transition"
+      />
+      <button
+        type="submit"
+        className="bg-white text-black px-6 py-3 rounded-xl font-semibold hover:bg-gray-200 transition whitespace-nowrap"
+      >
+        Join Waitlist
+      </button>
+      {status === "error" && (
+        <p className="text-red-400 text-sm mt-1">Something went wrong. Try again.</p>
+      )}
+    </form>
+  );
+}
 
 export default function Home() {
   return (
@@ -11,16 +70,8 @@ export default function Home() {
           </div>
           <span className="text-xl font-bold tracking-tight">Coach IronClaw</span>
         </div>
-        <div className="flex items-center gap-4">
-          <Link href="/login" className="text-sm text-gray-400 hover:text-white transition">
-            Log in
-          </Link>
-          <Link
-            href="/signup"
-            className="text-sm bg-white text-black px-4 py-2 rounded-lg font-medium hover:bg-gray-200 transition"
-          >
-            Get Started
-          </Link>
+        <div className="text-sm text-gray-400 border border-gray-700 px-4 py-2 rounded-lg">
+          Coming Soon
         </div>
       </nav>
 
@@ -40,19 +91,8 @@ export default function Home() {
           and delivers personalized Ironman coaching powered by AI. Training plans,
           race projections, and recovery guidance — all driven by your real data.
         </p>
-        <div className="flex items-center justify-center gap-4">
-          <Link
-            href="/signup"
-            className="bg-white text-black px-8 py-3.5 rounded-xl font-semibold text-base hover:bg-gray-200 transition"
-          >
-            Start Training Free
-          </Link>
-          <Link
-            href="#features"
-            className="border border-gray-700 text-gray-300 px-8 py-3.5 rounded-xl font-medium text-base hover:border-gray-500 transition"
-          >
-            See How It Works
-          </Link>
+        <div className="flex justify-center">
+          <WaitlistForm variant="large" />
         </div>
       </section>
 
@@ -154,15 +194,12 @@ export default function Home() {
             Ready to train smarter?
           </h2>
           <p className="text-gray-400 mb-8 max-w-lg mx-auto">
-            Join Coach IronClaw and get the same data-driven coaching that elite
-            triathletes use — powered by your own Garmin data.
+            Join the waitlist and be the first to experience data-driven AI coaching
+            powered by your Garmin.
           </p>
-          <Link
-            href="/signup"
-            className="inline-block bg-white text-black px-8 py-3.5 rounded-xl font-semibold text-base hover:bg-gray-200 transition"
-          >
-            Get Started Free
-          </Link>
+          <div className="flex justify-center">
+            <WaitlistForm variant="large" />
+          </div>
         </div>
       </section>
 
