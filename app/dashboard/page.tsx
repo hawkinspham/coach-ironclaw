@@ -252,7 +252,8 @@ function RaceTab() {
             />
             <Tooltip
               contentStyle={{ background: "#1F2937", border: "1px solid #374151", borderRadius: 8, color: "#fff" }}
-              formatter={(v: number) => { const h2 = Math.floor(v / 60); return [h2 + ":" + String(v % 60).padStart(2, "0"), "Projected"]; }}
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              formatter={(v: any) => { const n = Number(v); const h2 = Math.floor(n / 60); return [h2 + ":" + String(n % 60).padStart(2, "0"), "Projected"]; }}
             />
             <Line type="monotone" dataKey="min" stroke="#FBBF24" strokeWidth={2} dot={{ r: 4, fill: "#FBBF24" }} />
           </LineChart>
