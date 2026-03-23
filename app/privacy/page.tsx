@@ -124,8 +124,8 @@ export default function PrivacyPolicy() {
             <h2 className="text-lg font-bold text-white mt-8 mb-3">10. Contact Us</h2>
             <p>
               If you have questions about this privacy policy or your data, contact us at:{" "}
-              <a href="mailto:hawkins@brikk.run" className="text-orange-400 hover:underline">
-                hawkins@brikk.run
+              <a href="mailto:coach@brikk.run" className="text-orange-400 hover:underline">
+                coach@brikk.run
               </a>
             </p>
             <p className="mt-2">

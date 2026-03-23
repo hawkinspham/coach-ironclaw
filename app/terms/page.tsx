@@ -144,8 +144,8 @@ export default function TermsOfService() {
             <h2 className="text-lg font-bold text-white mt-8 mb-3">14. Contact</h2>
             <p>
               Questions about these terms? Contact us at:{" "}
-              <a href="mailto:hawkins@brikk.run" className="text-orange-400 hover:underline">
-                hawkins@brikk.run
+              <a href="mailto:coach@brikk.run" className="text-orange-400 hover:underline">
+                coach@brikk.run
               </a>
             </p>
             <p className="mt-2">

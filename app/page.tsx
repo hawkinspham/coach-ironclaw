@@ -190,7 +190,7 @@ export default function Home() {
             <div className="flex gap-6 text-sm text-gray-500">
               <Link href="/privacy" className="hover:text-gray-300 transition">Privacy</Link>
               <Link href="/terms" className="hover:text-gray-300 transition">Terms</Link>
-              <a href="mailto:hawkins@brikk.run" className="hover:text-gray-300 transition">Contact</a>
+              <a href="mailto:coach@brikk.run" className="hover:text-gray-300 transition">Contact</a>
             </div>
             <div className="text-xs text-gray-600">
               Operated by Be Cause Partners Pte Ltd
