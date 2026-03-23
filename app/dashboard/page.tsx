@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -9,6 +9,8 @@ import {
   DEMO_HEALTH, DEMO_TODAY, DEMO_WEEK, DEMO_PMC, DEMO_RACE,
   DEMO_WEEKS, DEMO_VOLUME, DEMO_NOTES, PHASE_COLORS,
 } from "./demo-data";
+
+/* ───────── helpers ───────── */
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] as const;
 
@@ -43,41 +45,21 @@ function StatCard({ label, value, sub, color }: { label: string; value: string |
   );
 }
 
-function DemoBanner() {
-  return (
-    <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-xl p-4 mb-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <div className="text-sm font-semibold text-blue-400">Demo Mode</div>
-          <div className="text-xs text-gray-400 mt-1">
-            This is sample data. Connect your Garmin to see your own training dashboard.
-          </div>
-        </div>
-        <button className="bg-white text-black px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition">
-          Connect Garmin
-        </button>
-      </div>
-    </div>
-  );
-}
+/* ───────── data panels ───────── */
 
-function TodayTab() {
+function TodayPanel() {
   const h = DEMO_HEALTH;
   const t = DEMO_TODAY;
   const readinessColor = h.readiness >= 60 ? "#10B981" : h.readiness >= 40 ? "#F59E0B" : "#EF4444";
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="text-xl font-bold">{t.date}</div>
-
-      {/* Readiness */}
+      <div className="text-lg font-bold">{t.date}</div>
       <div className="bg-[#111827] rounded-xl p-5 border border-gray-800 text-center">
         <div className="text-xs text-gray-500 uppercase tracking-wider mb-2">Training Readiness</div>
         <div className="text-5xl font-extrabold" style={{ color: readinessColor }}>{h.readiness}</div>
         <div className="text-sm mt-2" style={{ color: readinessColor }}>{h.readinessLabel}</div>
       </div>
-
-      {/* Health grid */}
       <div className="grid grid-cols-3 gap-3">
         <StatCard label="HRV" value={h.hrv} sub={`baseline ${h.hrvBaseline}`} color={h.hrv >= h.hrvBaseline ? "#10B981" : "#F59E0B"} />
         <StatCard label="Body Battery" value={h.bodyBattery} sub={h.bodyBattery >= 60 ? "Good" : "Low"} color={h.bodyBattery >= 60 ? "#10B981" : "#F59E0B"} />
@@ -86,8 +68,6 @@ function TodayTab() {
         <StatCard label="VO2 Max" value={h.vo2max} sub="Good" color="#10B981" />
         <StatCard label="Stress" value={h.stressAvg} sub="Low" color="#10B981" />
       </div>
-
-      {/* Today's session */}
       <div className="bg-[#111827] rounded-xl p-5 border border-gray-800">
         <div className="text-xs text-gray-500 uppercase tracking-wider mb-3">Today&apos;s Session</div>
         <div className="flex items-center gap-3">
@@ -98,24 +78,17 @@ function TodayTab() {
           </div>
         </div>
       </div>
-
-      {/* Race countdown */}
-      <div className="bg-[#111827] rounded-xl p-5 border border-gray-800 text-center">
-        <div className="text-xs text-gray-500 uppercase tracking-wider mb-2">Days to Race</div>
-        <div className="text-4xl font-extrabold text-white">{h.daysToRace}</div>
-        <div className="text-sm text-gray-400 mt-1">Ironman Da Nang — May 10, 2026</div>
-      </div>
     </div>
   );
 }
 
-function WeekTab() {
+function WeekPanel() {
   const w = DEMO_WEEK;
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <div>
-          <div className="text-xl font-bold">Week {w.week}</div>
+          <div className="text-lg font-bold">Week {w.week}</div>
           <div className="text-sm text-gray-400">{w.dates} — {w.phase}</div>
         </div>
         <div className="text-sm text-gray-400">Target: {w.hours}</div>
@@ -141,7 +114,6 @@ function WeekTab() {
           );
         })}
       </div>
-      {/* Phase timeline */}
       <div className="flex gap-0.5 mt-2">
         {DEMO_WEEKS.map((wk) => (
           <div
@@ -156,19 +128,16 @@ function WeekTab() {
           />
         ))}
       </div>
-      <div className="flex justify-between text-xs text-gray-500">
-        <span>W1 Base</span><span>W9 Build 2</span><span>W13 Peak</span><span>W18 Race</span>
-      </div>
     </div>
   );
 }
 
-function LoadTab() {
+function LoadPanel() {
   const h = DEMO_HEALTH;
   const tsbColor = h.tsb > 5 ? "#10B981" : h.tsb > -10 ? "#3B82F6" : h.tsb > -30 ? "#F59E0B" : "#EF4444";
   return (
     <div className="flex flex-col gap-4">
-      <div className="text-xl font-bold">Training Load</div>
+      <div className="text-lg font-bold">Training Load</div>
       <div className="grid grid-cols-3 gap-3">
         <StatCard label="Fitness (CTL)" value={h.ctl} sub="42-day chronic load" color="#3B82F6" />
         <StatCard label="Fatigue (ATL)" value={h.atl} sub="7-day acute load" color="#EF4444" />
@@ -203,7 +172,7 @@ function LoadTab() {
   );
 }
 
-function RaceTab() {
+function RacePanel() {
   const h = DEMO_HEALTH;
   return (
     <div className="flex flex-col gap-4">
@@ -263,11 +232,11 @@ function RaceTab() {
   );
 }
 
-function StatsTab() {
+function StatsPanel() {
   const h = DEMO_HEALTH;
   return (
     <div className="flex flex-col gap-4">
-      <div className="text-xl font-bold">Season Progress</div>
+      <div className="text-lg font-bold">Season Progress</div>
       <div className="grid grid-cols-3 gap-3">
         <StatCard label="Total Volume" value={`${h.totalHours}h`} sub={`${h.totalSessions} sessions`} color="#3B82F6" />
         <StatCard label="VO2 Max" value={h.vo2max} sub="Good fitness" color="#10B981" />
@@ -309,10 +278,10 @@ function StatsTab() {
   );
 }
 
-function DiaryTab() {
+function DiaryPanel() {
   return (
     <div className="flex flex-col gap-4">
-      <div className="text-xl font-bold">Training Diary</div>
+      <div className="text-lg font-bold">Training Diary</div>
       <div className="text-sm text-gray-400">{DEMO_NOTES.length} entries</div>
       {DEMO_NOTES.map((n, i) => (
         <div key={i} className="bg-[#111827] rounded-xl p-4 border border-gray-800">
@@ -335,13 +304,13 @@ function DiaryTab() {
   );
 }
 
-function PlanTab() {
+function PlanPanel() {
   const [expanded, setExpanded] = useState<number | null>(11);
   const currentWeek = 11;
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="text-xl font-bold mb-1">18-Week Training Plan</div>
+      <div className="text-lg font-bold mb-1">18-Week Training Plan</div>
       <div className="text-sm text-gray-400 mb-3">Jan 5 – May 10, 2026 — Ironman Da Nang — Goal: sub-12:00</div>
       {DEMO_WEEKS.map((w) => {
         const isExp = expanded === w.week;
@@ -390,7 +359,9 @@ function PlanTab() {
   );
 }
 
-const TABS = [
+/* ───────── data panel tabs ───────── */
+
+const DATA_TABS = [
   { id: "today", label: "Today", icon: "📋" },
   { id: "week", label: "Week", icon: "📅" },
   { id: "load", label: "Load", icon: "📊" },
@@ -400,40 +371,35 @@ const TABS = [
   { id: "plan", label: "Plan", icon: "📖" },
 ];
 
-export default function Dashboard() {
-  const [tab, setTab] = useState("today");
+function DataDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const [dataTab, setDataTab] = useState("today");
+
+  if (!open) return null;
 
   return (
-    <div className="min-h-screen bg-[#030712] text-white font-sans">
-      <div className="max-w-[680px] mx-auto px-4 pt-4 pb-20">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-4">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xs font-extrabold">
-              IC
-            </div>
-            <div>
-              <div className="text-base font-bold tracking-tight">Coach IronClaw</div>
-              <div className="text-xs text-gray-500">Ironman Da Nang — {DEMO_HEALTH.daysToRace} days</div>
-            </div>
-          </Link>
-          <div className="text-right">
-            <div className="text-xs text-gray-500">Week 11 of 18</div>
-            <div className="text-xs font-semibold" style={{ color: PHASE_COLORS["Build 2"] }}>Build 2</div>
+    <div className="fixed inset-0 z-50 flex flex-col">
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+
+      {/* Drawer */}
+      <div className="relative mt-16 mx-auto w-full max-w-[700px] flex-1 bg-[#0a0f1a] border border-gray-800 rounded-t-2xl overflow-hidden flex flex-col animate-slideUp">
+        {/* Handle + close */}
+        <div className="flex items-center justify-between px-4 pt-3 pb-2 border-b border-gray-800">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-1 rounded-full bg-gray-600" />
+            <span className="text-xs text-gray-500 ml-2">Training Data</span>
           </div>
+          <button onClick={onClose} className="text-gray-500 hover:text-white text-lg px-2">✕</button>
         </div>
 
-        {/* Demo banner */}
-        <DemoBanner />
-
         {/* Tab bar */}
-        <div className="flex gap-0.5 bg-[#111827] rounded-xl p-1 mb-4 border border-gray-800">
-          {TABS.map((t) => (
+        <div className="flex gap-0.5 bg-[#111827] mx-3 mt-3 rounded-xl p-1 border border-gray-800">
+          {DATA_TABS.map((t) => (
             <button
               key={t.id}
-              onClick={() => setTab(t.id)}
+              onClick={() => setDataTab(t.id)}
               className={`flex-1 flex items-center justify-center gap-1 py-2 rounded-lg text-xs font-medium transition ${
-                tab === t.id ? "bg-white text-black" : "text-gray-500 hover:text-gray-300"
+                dataTab === t.id ? "bg-white text-black" : "text-gray-500 hover:text-gray-300"
               }`}
             >
               <span className="text-sm">{t.icon}</span>
@@ -442,15 +408,255 @@ export default function Dashboard() {
           ))}
         </div>
 
-        {/* Tab content */}
-        {tab === "today" && <TodayTab />}
-        {tab === "week" && <WeekTab />}
-        {tab === "load" && <LoadTab />}
-        {tab === "race" && <RaceTab />}
-        {tab === "stats" && <StatsTab />}
-        {tab === "diary" && <DiaryTab />}
-        {tab === "plan" && <PlanTab />}
+        {/* Panel content */}
+        <div className="flex-1 overflow-y-auto px-4 py-4">
+          {dataTab === "today" && <TodayPanel />}
+          {dataTab === "week" && <WeekPanel />}
+          {dataTab === "load" && <LoadPanel />}
+          {dataTab === "race" && <RacePanel />}
+          {dataTab === "stats" && <StatsPanel />}
+          {dataTab === "diary" && <DiaryPanel />}
+          {dataTab === "plan" && <PlanPanel />}
+        </div>
       </div>
+    </div>
+  );
+}
+
+/* ───────── main dashboard — chat first ───────── */
+
+export default function Dashboard() {
+  const [messages, setMessages] = useState<{ role: string; content: string; model?: string }[]>([]);
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, loading]);
+
+  const sendMessage = async (text?: string) => {
+    const msg = text || input.trim();
+    if (!msg || loading) return;
+
+    const userMessage = { role: "user", content: msg };
+    const newMessages = [...messages, userMessage];
+    setMessages(newMessages);
+    setInput("");
+    setLoading(true);
+
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: newMessages }),
+      });
+      const data = await res.json();
+      if (data.message) {
+        setMessages([...newMessages, { role: "assistant", content: data.message, model: data.model }]);
+      }
+    } catch {
+      setMessages([...newMessages, { role: "assistant", content: "Sorry, I had trouble responding. Try again." }]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const h = DEMO_HEALTH;
+
+  return (
+    <div className="h-screen bg-[#030712] text-white font-sans flex flex-col">
+      {/* ── Header ── */}
+      <div className="border-b border-gray-800 px-4 py-3">
+        <div className="max-w-[700px] mx-auto flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center text-xs font-extrabold">
+              B
+            </div>
+            <div>
+              <div className="text-base font-bold tracking-tight">Brikk</div>
+              <div className="text-xs text-gray-500">Ironman Da Nang — {h.daysToRace} days</div>
+            </div>
+          </Link>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setDrawerOpen(true)}
+              className="flex items-center gap-2 bg-[#111827] border border-gray-700 rounded-xl px-3 py-2 text-sm text-gray-300 hover:text-white hover:border-gray-500 transition"
+            >
+              <span>📊</span>
+              <span className="hidden sm:inline">My Data</span>
+            </button>
+            <div className="text-right hidden sm:block">
+              <div className="text-xs text-gray-500">Week 11 of 18</div>
+              <div className="text-xs font-semibold" style={{ color: PHASE_COLORS["Build 2"] }}>Build 2</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Demo banner ── */}
+      <div className="px-4 pt-3">
+        <div className="max-w-[700px] mx-auto">
+          <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-xl px-4 py-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <span className="text-xs font-semibold text-blue-400">Demo Mode</span>
+                <span className="text-xs text-gray-400 ml-2">Connect your Garmin to see your own data.</span>
+              </div>
+              <button className="bg-white text-black px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-200 transition">
+                Connect Garmin
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Quick stats ribbon ── */}
+      <div className="px-4 pt-3">
+        <div className="max-w-[700px] mx-auto flex gap-2 overflow-x-auto pb-1">
+          {[
+            { label: "Readiness", value: String(h.readiness), color: h.readiness >= 60 ? "#10B981" : "#F59E0B" },
+            { label: "CTL", value: String(h.ctl), color: "#3B82F6" },
+            { label: "TSB", value: String(h.tsb), color: h.tsb > -10 ? "#3B82F6" : "#F59E0B" },
+            { label: "Race", value: `${h.daysToRace}d`, color: "#FBBF24" },
+            { label: "HRV", value: String(h.hrv), color: "#10B981" },
+          ].map((s, i) => (
+            <button
+              key={i}
+              onClick={() => setDrawerOpen(true)}
+              className="flex items-center gap-2 bg-[#111827] border border-gray-800 rounded-lg px-3 py-2 hover:border-gray-600 transition shrink-0"
+            >
+              <span className="text-xs text-gray-500">{s.label}</span>
+              <span className="text-sm font-bold" style={{ color: s.color }}>{s.value}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Chat area ── */}
+      <div className="flex-1 overflow-y-auto px-4 pt-4 pb-2">
+        <div className="max-w-[700px] mx-auto flex flex-col gap-4">
+          {messages.length === 0 && (
+            <div className="flex-1 flex items-center justify-center py-16">
+              <div className="text-center">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center text-2xl font-extrabold mx-auto mb-4">
+                  B
+                </div>
+                <div className="text-xl font-bold mb-2">Hey, I&apos;m Brikk</div>
+                <div className="text-gray-400 text-sm max-w-sm mx-auto mb-6">
+                  Your AI triathlon coach. Ask me about your training, race strategy, nutrition, recovery — anything.
+                </div>
+                <div className="flex flex-wrap gap-2 justify-center">
+                  {[
+                    "What should I do today?",
+                    "Analyze my training load",
+                    "Race day nutrition plan",
+                    "Am I on track for sub-12?",
+                    "How should I taper?",
+                    "Recovery tips after long ride",
+                  ].map((q, i) => (
+                    <button
+                      key={i}
+                      onClick={() => sendMessage(q)}
+                      className="text-sm bg-[#111827] border border-gray-700 rounded-xl px-4 py-2.5 text-gray-400 hover:text-white hover:border-gray-500 transition"
+                    >
+                      {q}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {messages.map((m, i) => (
+            <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
+              <div
+                className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
+                  m.role === "user"
+                    ? "bg-blue-600 text-white"
+                    : "bg-[#111827] border border-gray-800 text-gray-200"
+                }`}
+              >
+                {m.role === "assistant" && (
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-5 h-5 rounded-md bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center text-[7px] font-extrabold">B</div>
+                    <span className="text-xs text-gray-500 font-semibold">Brikk Coach</span>
+                    {m.model && (
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${m.model === "opus" ? "bg-purple-900/50 text-purple-400" : "bg-blue-900/50 text-blue-400"}`}>
+                        {m.model === "opus" ? "deep" : "quick"}
+                      </span>
+                    )}
+                  </div>
+                )}
+                <div className="whitespace-pre-wrap">{m.content}</div>
+              </div>
+            </div>
+          ))}
+
+          {loading && (
+            <div className="flex justify-start">
+              <div className="bg-[#111827] border border-gray-800 rounded-2xl px-4 py-3 text-sm text-gray-400">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-5 h-5 rounded-md bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center text-[7px] font-extrabold">B</div>
+                  <span className="text-xs text-gray-500 font-semibold">Brikk Coach</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="inline-block w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                  <span className="inline-block w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                  <span className="inline-block w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div ref={messagesEndRef} />
+        </div>
+      </div>
+
+      {/* ── Input bar ── */}
+      <div className="border-t border-gray-800 px-4 py-3">
+        <div className="max-w-[700px] mx-auto">
+          <form
+            onSubmit={(e) => { e.preventDefault(); sendMessage(); }}
+            className="flex gap-2"
+          >
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Ask Brikk..."
+              className="flex-1 px-4 py-3 rounded-xl bg-[#111827] border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 transition"
+              disabled={loading}
+            />
+            <button
+              type="submit"
+              disabled={loading || !input.trim()}
+              className="bg-blue-600 text-white px-5 py-3 rounded-xl font-medium hover:bg-blue-500 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Send
+            </button>
+          </form>
+        </div>
+      </div>
+
+      {/* ── Data drawer ── */}
+      <DataDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
+
+      {/* ── Slide-up animation ── */}
+      <style jsx global>{`
+        @keyframes slideUp {
+          from { transform: translateY(100%); }
+          to { transform: translateY(0); }
+        }
+        .animate-slideUp {
+          animation: slideUp 0.3s ease-out;
+        }
+      `}</style>
     </div>
   );
 }

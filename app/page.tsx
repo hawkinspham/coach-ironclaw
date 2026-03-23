@@ -29,31 +29,34 @@ function WaitlistForm({ variant = "large" }: { variant?: "large" | "small" }) {
 
   if (status === "success") {
     return (
-      <div className="flex items-center gap-2 text-green-400 font-medium">
-        <span>✓</span>
-        <span>You&apos;re on the list! We&apos;ll be in touch.</span>
+      <div className="text-emerald-400 font-semibold text-sm py-2">
+        You&apos;re on the list! We&apos;ll be in touch.
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className={`flex ${variant === "large" ? "flex-col sm:flex-row" : "flex-row"} gap-3 w-full max-w-md ${variant === "large" ? "mx-auto" : ""}`}>
+    <form onSubmit={handleSubmit} className={`flex gap-2 ${variant === "large" ? "flex-col sm:flex-row" : ""}`}>
       <input
         type="email"
-        placeholder="Enter your email"
         value={email}
-        onChange={(e) => { setEmail(e.target.value); setStatus("idle"); }}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="your@email.com"
+        className={`px-4 py-3 rounded-xl bg-[#111827] border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:border-orange-500 transition ${
+          variant === "large" ? "flex-1 text-base" : "flex-1 text-sm"
+        }`}
         required
-        className="flex-1 px-4 py-3 rounded-xl bg-[#111827] border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 transition"
       />
       <button
         type="submit"
-        className="bg-white text-black px-6 py-3 rounded-xl font-semibold hover:bg-gray-200 transition whitespace-nowrap"
+        className={`bg-gradient-to-r from-orange-500 to-red-600 text-white font-semibold rounded-xl hover:opacity-90 transition ${
+          variant === "large" ? "px-8 py-3 text-base" : "px-5 py-3 text-sm"
+        }`}
       >
         Join Waitlist
       </button>
       {status === "error" && (
-        <p className="text-red-400 text-sm mt-1">Something went wrong. Try again.</p>
+        <div className="text-red-400 text-xs mt-1">Something went wrong. Try again.</div>
       )}
     </form>
   );
@@ -63,162 +66,135 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[#030712] text-white font-sans">
       {/* Nav */}
-      <nav className="max-w-6xl mx-auto px-6 py-6 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-sm font-extrabold">
-            IC
+      <nav className="border-b border-gray-800">
+        <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center text-sm font-extrabold">
+              B
+            </div>
+            <span className="text-xl font-bold tracking-tight">Brikk</span>
           </div>
-          <span className="text-xl font-bold tracking-tight">Coach IronClaw</span>
-        </div>
-        <div className="text-sm text-gray-400 border border-gray-700 px-4 py-2 rounded-lg">
-          Coming Soon
+          <div className="flex items-center gap-4">
+            <span className="text-xs bg-orange-500/10 text-orange-400 px-3 py-1 rounded-full font-medium border border-orange-500/20">
+              Coming Soon
+            </span>
+          </div>
         </div>
       </nav>
 
       {/* Hero */}
-      <section className="max-w-4xl mx-auto px-6 pt-20 pb-32 text-center">
-        <div className="inline-block px-4 py-1.5 rounded-full border border-gray-700 text-xs text-gray-400 mb-8">
-          Garmin-powered AI triathlon coaching
+      <section className="max-w-5xl mx-auto px-6 pt-20 pb-16 text-center">
+        <div className="inline-block text-xs bg-orange-500/10 text-orange-400 px-4 py-1.5 rounded-full font-medium border border-orange-500/20 mb-6">
+          AI-Powered Triathlon Coaching
         </div>
-        <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight leading-tight mb-6">
-          Your data.{" "}
-          <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-amber-400 bg-clip-text text-transparent">
-            Your coach.
+        <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight mb-6 leading-tight">
+          Your coach knows<br />
+          <span className="bg-gradient-to-r from-orange-400 to-red-500 bg-clip-text text-transparent">
+            every workout you&apos;ve done
           </span>
         </h1>
-        <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-12 leading-relaxed">
-          Coach IronClaw syncs with your Garmin, analyzes every swim, bike, and run,
-          and delivers personalized Ironman coaching powered by AI. Training plans,
-          race projections, and recovery guidance — all driven by your real data.
+        <p className="text-gray-400 text-lg max-w-2xl mx-auto mb-10">
+          Brikk connects to your Garmin, analyzes your training data, and gives you personalized
+          coaching powered by AI. Like texting with a coach who never forgets a session.
         </p>
-        <div className="flex justify-center">
+        <div className="max-w-md mx-auto">
           <WaitlistForm variant="large" />
         </div>
       </section>
 
       {/* Features */}
-      <section id="features" className="max-w-6xl mx-auto px-6 pb-32">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Everything a triathlon coach does. Powered by your Garmin.
-          </h2>
-          <p className="text-gray-400 max-w-xl mx-auto">
-            Connect your watch and Coach IronClaw does the rest.
-          </p>
-        </div>
+      <section className="max-w-5xl mx-auto px-6 py-16">
         <div className="grid md:grid-cols-3 gap-6">
           {[
             {
               icon: "📊",
-              title: "Training Load Analysis",
-              desc: "Real-time CTL, ATL, and TSB tracking. Know exactly when to push and when to rest based on your actual training stress.",
+              title: "Garmin-Connected",
+              desc: "Your health metrics, training load, sleep, HRV, and every session — automatically synced and analyzed.",
+            },
+            {
+              icon: "🧠",
+              title: "AI That Learns You",
+              desc: "Brikk understands periodization, your training phase, and adapts advice to your specific race and goals.",
+            },
+            {
+              icon: "💬",
+              title: "Chat-First Coaching",
+              desc: "Ask anything — pacing, nutrition, taper strategy, recovery. Get data-backed answers in seconds.",
             },
             {
               icon: "🏁",
               title: "Race Projections",
-              desc: "AI-powered finish time predictions for your next race, updated weekly as your fitness improves.",
-            },
-            {
-              icon: "📋",
-              title: "Personalized Plans",
-              desc: "18-week periodized training plans that adapt to your schedule, fitness level, and race goals.",
-            },
-            {
-              icon: "💬",
-              title: "AI Coaching Chat",
-              desc: "Ask Coach IronClaw anything — session analysis, nutrition strategy, race prep. It knows your data.",
-            },
-            {
-              icon: "❤️",
-              title: "Recovery Monitoring",
-              desc: "HRV, Body Battery, sleep score, and readiness tracked daily to prevent overtraining and illness.",
+              desc: "Real-time finish time estimates based on your actual fitness data, updated every week.",
             },
             {
               icon: "📈",
-              title: "Split-Level Analysis",
-              desc: "Every run, ride, and swim broken down by splits with pace, HR, cadence, and elevation data.",
+              title: "Training Load Tracking",
+              desc: "CTL, ATL, TSB, injury ratios — all the metrics your coach would track, automated and visualized.",
+            },
+            {
+              icon: "🔒",
+              title: "Your Data, Your Coach",
+              desc: "Each athlete gets their own private coaching instance. Your data is never shared with other users.",
             },
           ].map((f, i) => (
-            <div
-              key={i}
-              className="bg-[#111827] border border-gray-800 rounded-2xl p-6 hover:border-gray-600 transition"
-            >
-              <div className="text-3xl mb-4">{f.icon}</div>
-              <h3 className="text-lg font-semibold mb-2">{f.title}</h3>
-              <p className="text-sm text-gray-400 leading-relaxed">{f.desc}</p>
+            <div key={i} className="bg-[#111827] rounded-2xl p-6 border border-gray-800 hover:border-gray-700 transition">
+              <div className="text-2xl mb-3">{f.icon}</div>
+              <div className="font-semibold mb-2">{f.title}</div>
+              <div className="text-sm text-gray-400 leading-relaxed">{f.desc}</div>
             </div>
           ))}
         </div>
       </section>
 
       {/* How it works */}
-      <section className="max-w-4xl mx-auto px-6 pb-32">
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
-          Up and running in 3 minutes
-        </h2>
-        <div className="flex flex-col gap-12">
+      <section className="max-w-5xl mx-auto px-6 py-16">
+        <h2 className="text-2xl font-bold text-center mb-12">How Brikk Works</h2>
+        <div className="grid md:grid-cols-3 gap-8">
           {[
-            {
-              step: "1",
-              title: "Create your account",
-              desc: "Sign up in seconds. No credit card required.",
-            },
-            {
-              step: "2",
-              title: "Connect your Garmin",
-              desc: "One-click OAuth sync. We pull your activities, health metrics, sleep, HRV, and Body Battery data.",
-            },
-            {
-              step: "3",
-              title: "Meet your coach",
-              desc: "Coach IronClaw analyzes your training history and builds your personalized dashboard, training plan, and race projection.",
-            },
+            { step: "1", title: "Connect Garmin", desc: "Link your Garmin account. Brikk syncs your training, health, and sleep data automatically." },
+            { step: "2", title: "Chat with Brikk", desc: "Ask about your training, get session analysis, race strategy, nutrition plans — all personalized to your data." },
+            { step: "3", title: "Train Smarter", desc: "Brikk tracks your load, flags risks, and adjusts advice as you progress toward race day." },
           ].map((s, i) => (
-            <div key={i} className="flex items-start gap-6">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-lg font-bold shrink-0">
+            <div key={i} className="text-center">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center text-lg font-bold mx-auto mb-4">
                 {s.step}
               </div>
-              <div>
-                <h3 className="text-xl font-semibold mb-2">{s.title}</h3>
-                <p className="text-gray-400 leading-relaxed">{s.desc}</p>
-              </div>
+              <div className="font-semibold mb-2">{s.title}</div>
+              <div className="text-sm text-gray-400">{s.desc}</div>
             </div>
           ))}
         </div>
       </section>
 
       {/* CTA */}
-      <section className="max-w-4xl mx-auto px-6 pb-32 text-center">
-        <div className="bg-[#111827] border border-gray-800 rounded-3xl p-12 md:p-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Ready to train smarter?
-          </h2>
-          <p className="text-gray-400 mb-8 max-w-lg mx-auto">
-            Join the waitlist and be the first to experience data-driven AI coaching
-            powered by your Garmin.
-          </p>
-          <div className="flex justify-center">
-            <WaitlistForm variant="large" />
+      <section className="max-w-5xl mx-auto px-6 py-16 text-center">
+        <div className="bg-gradient-to-r from-orange-500/10 to-red-500/10 border border-orange-500/20 rounded-2xl p-10">
+          <h2 className="text-2xl font-bold mb-4">Ready to train with AI?</h2>
+          <p className="text-gray-400 mb-6">Join the waitlist and be first to get access when Brikk launches.</p>
+          <div className="max-w-md mx-auto">
+            <WaitlistForm variant="small" />
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-gray-800 py-8">
-        <div className="max-w-6xl mx-auto px-6 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-md bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-[8px] font-extrabold">
-              IC
+      <footer className="border-t border-gray-800 mt-8">
+        <div className="max-w-5xl mx-auto px-6 py-8">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-md bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center text-xs font-extrabold">
+                B
+              </div>
+              <span className="font-semibold">Brikk</span>
             </div>
-            <span className="text-sm text-gray-500">Coach IronClaw</span>
-          </div>
-          <div className="flex items-center gap-6 text-sm text-gray-500">
-            <Link href="/privacy" className="hover:text-gray-300 transition">
-              Privacy
-            </Link>
-            <Link href="/terms" className="hover:text-gray-300 transition">
-              Terms
-            </Link>
+            <div className="flex gap-6 text-sm text-gray-500">
+              <Link href="/privacy" className="hover:text-gray-300 transition">Privacy</Link>
+              <Link href="/terms" className="hover:text-gray-300 transition">Terms</Link>
+              <a href="mailto:hawkins@brikk.run" className="hover:text-gray-300 transition">Contact</a>
+            </div>
+            <div className="text-xs text-gray-600">
+              Operated by Be Cause Partners Pte Ltd
+            </div>
           </div>
         </div>
       </footer>
